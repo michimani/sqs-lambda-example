@@ -9,7 +9,7 @@ AWS Lambda functions using container images.
 
     ```bash
     REGION='ap-northeast-1'
-    ACCOUNT_ID=$(
+    AWS_ACCOUNT_ID=$(
       aws sts get-caller-identity \
       --query 'Account' \
       --output text) \
@@ -17,7 +17,7 @@ AWS Lambda functions using container images.
       --region "${REGION}" \
       | docker login \
       --username AWS \
-      --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+      --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
     ```
 
 1. Build
@@ -32,11 +32,29 @@ AWS Lambda functions using container images.
     docker run \
     --rm \
     -p 9000:8080 \
-    sqs-lambda-example-function:latest /main
+    sqs-lambda-example-function:latest
     ```
 
 3. Invoke function
 
     ```bash
     curl "http://localhost:9000/2015-03-31/functions/function/invocations"
+    ```
+
+## Push to ECR Repository
+
+After creating ECR Repository, push built image to there.
+
+1. Create tag
+
+    ```bash
+    docker tag \
+    sqs-lambda-example-function:latest \
+    "${AWS_ACCOUNT_ID}".dkr.ecr.ap-northeast-1.amazonaws.com/sqs-lambda-example-function:latest
+    ```
+
+2. Push
+
+    ```bash
+    docker push "${AWS_ACCOUNT_ID}".dkr.ecr.ap-northeast-1.amazonaws.com/sqs-lambda-example-function:latest
     ```
