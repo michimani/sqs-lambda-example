@@ -28,16 +28,16 @@ infra
 
 1. Only apply ECR Repository
 
-  First, apply only resource of ECR Repository.
+    First, apply only resource of ECR Repository.
 
-  ```bash
-  terraform apply --target=aws_ecr_repository.sqs_lambda_example_function
-  ```
+    ```bash
+    terraform apply --target=aws_ecr_repository.sqs_lambda_example_function
+    ```
 
-  Then, push the first image to this repository following [../lambda/README.md].
+    Then, push the first image to this repository following [lambda/README.md](../lambda/README.md).
 
 1. Apply other resources
 
-  ```bash
-  terraform apply
-  ```
+    ```bash
+    terraform apply
+    ```
