@@ -14,3 +14,4 @@ COPY --from=build /main /main
 COPY entry.sh /
 RUN chmod 755 /entry.sh
 ENTRYPOINT [ "/entry.sh" ]
+CMD ["/main"]
