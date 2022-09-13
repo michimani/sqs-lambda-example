@@ -5,6 +5,11 @@ resource "aws_lambda_function" "sqs_lambda_example_function" {
   image_uri     = "${aws_ecr_repository.sqs_lambda_example_function.repository_url}:latest"
   timeout       = 60
   memory_size   = 128
+  environment {
+    variables = {
+      "ENV" = "production"
+    }
+  }
 }
 
 resource "aws_iam_role" "role_for_lambda" {
