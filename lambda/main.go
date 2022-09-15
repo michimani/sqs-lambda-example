@@ -20,10 +20,10 @@ func handleRequest() (Response, error) {
 	log.Println("start handler")
 	defer log.Println("end handler")
 
-	env := os.Getenv("ENV")
+	color := os.Getenv("COLOR")
 
 	count++
-	message := fmt.Sprintf("[%s] Hello AWS Lambda", env)
+	message := fmt.Sprintf("[%s] Hello AWS Lambda", color)
 	for i := 0; i < count; i++ {
 		message = message + "!"
 	}

@@ -32,7 +32,7 @@ AWS Lambda functions using container images.
     docker run \
     --rm \
     -p 9000:8080 \
-    -e ENV='local' \
+    -e COLOR='white' \
     sqs-lambda-example-function:latest
     ```
 
