@@ -13,6 +13,23 @@ resource "aws_lambda_function" "sqs_lambda_example_function_red" {
   }
 }
 
+# SQS message contains `color: red` to red function
+resource "aws_lambda_event_source_mapping" "event_source_mapping_red_with_sqs" {
+  enabled          = true
+  function_name    = aws_lambda_function.sqs_lambda_example_function_red.function_name
+  batch_size       = 1
+  event_source_arn = aws_sqs_queue.sqs_lambda_example_queue.arn
+  filter_criteria {
+    filter {
+      pattern = jsonencode({
+        body = {
+          color : ["red"]
+        }
+      })
+    }
+  }
+}
+
 # function blue
 resource "aws_lambda_function" "sqs_lambda_example_function_blue" {
   function_name = "sqs-lambda-example-function-blue"
@@ -24,6 +41,23 @@ resource "aws_lambda_function" "sqs_lambda_example_function_blue" {
   environment {
     variables = {
       "COLOR" = "blue"
+    }
+  }
+}
+
+# SQS message contains `color: blue` to blue function
+resource "aws_lambda_event_source_mapping" "event_source_mapping_blue_with_sqs" {
+  enabled          = true
+  function_name    = aws_lambda_function.sqs_lambda_example_function_blue.function_name
+  batch_size       = 1
+  event_source_arn = aws_sqs_queue.sqs_lambda_example_queue.arn
+  filter_criteria {
+    filter {
+      pattern = jsonencode({
+        body = {
+          color : ["blue"]
+        }
+      })
     }
   }
 }
