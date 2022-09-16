@@ -39,7 +39,10 @@ AWS Lambda functions using container images.
 3. Invoke function
 
     ```bash
-    curl "http://localhost:9000/2015-03-31/functions/function/invocations"
+    curl -X POST \
+    -H 'Content-Type: application/json' \
+    -d '{"Records": [{"messageId": "message-id", "eventSource": "event-source", "body": "{\"color\": \"white\", \"text\": \"sample text\"}"}]}' \
+    http://localhost:9000/2015-03-31/functions/function/invocation
     ```
 
 ## Push to ECR Repository
