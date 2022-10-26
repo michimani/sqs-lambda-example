@@ -41,3 +41,13 @@ infra
     ```bash
     terraform apply
     ```
+
+## Invoke the functions via SQS queue
+
+Send message to SQS queue.
+
+```bash
+aws sqs send-message \
+--queue-url "$(aws sqs get-queue-url --queue-name 'sqs-lambda-example-queue' --output text)" \
+--message-body "{\"color\":\"blue\", \"text\":\"test\"}"
+```
