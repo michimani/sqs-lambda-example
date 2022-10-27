@@ -1,32 +1,32 @@
 resource "aws_lambda_function" "sqs_lambda_example_function" {
-  count = length(var.functions)
+  for_each = { for f in var.functions : f.function_name => f }
 
-  function_name = var.functions[count.index].function_name
-  role          = aws_iam_role.role_for_lambda[count.index].arn
+  function_name = each.value.function_name
+  role          = aws_iam_role.role_for_lambda[each.key].arn
   package_type  = "Image"
-  image_uri     = var.functions[count.index].image_uri
-  timeout       = var.functions[count.index].timeout
-  memory_size   = var.functions[count.index].memory_size
+  image_uri     = each.value.image_uri
+  timeout       = each.value.timeout
+  memory_size   = each.value.memory_size
   environment {
     variables = {
-      "COLOR" = var.functions[count.index].function_color
+      "COLOR" = each.value.function_color
     }
   }
 }
 
 # SQS message contains `color: red` to red function
 resource "aws_lambda_event_source_mapping" "event_source_mapping_with_sqs" {
-  count = length(var.functions)
+  for_each = { for f in var.functions : f.function_name => f }
 
   enabled          = true
-  function_name    = var.functions[count.index].function_name
+  function_name    = aws_lambda_function.sqs_lambda_example_function[each.key].function_name
   batch_size       = 1
-  event_source_arn = var.functions[count.index].queue_arn
+  event_source_arn = each.value.queue_arn
   filter_criteria {
     filter {
       pattern = jsonencode({
         body = {
-          color : ["${var.functions[count.index].function_color}"]
+          color : ["${each.value.function_color}"]
         }
       })
     }
@@ -34,9 +34,9 @@ resource "aws_lambda_event_source_mapping" "event_source_mapping_with_sqs" {
 }
 
 resource "aws_iam_role" "role_for_lambda" {
-  count = length(var.functions)
+  for_each = { for f in var.functions : f.function_name => f }
 
-  name = "role-for-${var.functions[count.index].function_name}"
+  name = "role-for-${each.value.function_name}"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -54,9 +54,9 @@ resource "aws_iam_role" "role_for_lambda" {
 }
 
 resource "aws_iam_policy" "policy_for_function" {
-  count = length(var.functions)
+  for_each = { for f in var.functions : f.function_name => f }
 
-  name = "policy-for-${var.functions[count.index].function_name}"
+  name = "policy-for-${each.value.function_name}"
   policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -76,21 +76,21 @@ resource "aws_iam_policy" "policy_for_function" {
           "sqs:GetQueueAttributes",
           "sqs:ReceiveMessage"
         ],
-        "Resource" : var.functions[count.index].queue_arn
+        "Resource" : each.value.queue_arn
       }
     ]
   })
 }
 
 resource "aws_iam_policy_attachment" "policy_attachment_for_function_role" {
-  count = length(var.functions)
+  for_each = { for f in var.functions : f.function_name => f }
 
-  name = "policy-attachment-for-${var.functions[count.index].function_name}"
+  name = "policy-attachment-for-${each.value.function_name}"
 
   roles = [
-    aws_iam_role.role_for_lambda[count.index].name
+    aws_iam_role.role_for_lambda[each.key].name
   ]
 
-  policy_arn = aws_iam_policy.policy_for_function[count.index].arn
+  policy_arn = aws_iam_policy.policy_for_function[each.key].arn
 }
 
